@@ -1,0 +1,67 @@
+{% extends "events/base.html" %}
+{% block content %}
+<div class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h1 class="card-title mb-4">{{ event.title }}</h1>
+
+      <p><strong>Date:</strong> {{ event.date }}</p>
+      <p><strong>Time:</strong> {{ event.start_time }} - {{ event.end_time }}</p>
+      <p><strong>Location:</strong> {{ event.location }}</p>
+      <p>{{ event.description }}</p>
+
+      {% if error %}
+        <div class="alert alert-danger mt-3" role="alert">
+          {{ error }}
+        </div>
+      {% endif %}
+
+      <form method="post" class="mt-4">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="rsvpStatus" class="form-label">RSVP</label>
+          <select class="form-select" id="rsvpStatus" name="status" required>
+            <option value="going" {% if rsvp and rsvp.status == 'going' %}selected{% endif %}>Going</option>
+            <option value="maybe" {% if rsvp and rsvp.status == 'maybe' %}selected{% endif %}>Maybe</option>
+            <option value="declined" {% if rsvp and rsvp.status == 'declined' %}selected{% endif %}>Declined</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit RSVP</button>
+      </form>
+
+      {% if request.user.is_staff %}
+        <div class="mt-4">
+          <a href="{% url 'admin_event_delete' event.id %}" class="btn btn-danger me-2">Delete Event</a>
+          <a href="{% url 'admin_event_update' event.id %}" class="btn btn-secondary">Update Event</a>
+        </div>
+      {% endif %}
+
+      <div class="mt-4">
+        <a href="{% url 'event_list' %}" class="btn btn-outline-secondary">Back to Events</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Custom styles */
+  .card-title {
+    font-weight: 700;
+    font-size: 2rem;
+  }
+
+  p {
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 576px) {
+    .card-title {
+      font-size: 1.5rem;
+    }
+
+    p {
+      font-size: 1rem;
+    }
+  }
+</style>
+{% endblock %}

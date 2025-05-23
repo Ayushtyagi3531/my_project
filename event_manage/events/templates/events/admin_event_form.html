@@ -1,0 +1,112 @@
+{% extends "events/base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow">
+    <div class="card-body">
+      <h2 class="card-title text-center mb-4">{% if event %}Edit Event{% else %}Create Event{% endif %}</h2>
+
+      {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input type="text" class="form-control" id="title" name="title" value="{{ event.title|default_if_none:'' }}">
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea class="form-control" id="description" name="description" rows="3">{{ event.description|default_if_none:'' }}</textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="date" class="form-label">Date</label>
+          <input type="date" class="form-control" id="date" name="date" value="{{ event.date|date:'Y-m-d'|default_if_none:'' }}" min="">
+        </div>
+
+        <div class="mb-3">
+          <label for="start_time" class="form-label">Start Time</label>
+          <input type="time" class="form-control" id="start_time" name="start_time" value="{{ event.start_time|time:'H:i'|default_if_none:'' }}">
+        </div>
+
+        <div class="mb-3">
+          <label for="end_time" class="form-label">End Time</label>
+          <input type="time" class="form-control" id="end_time" name="end_time" value="{{ event.end_time|time:'H:i'|default_if_none:'' }}">
+        </div>
+
+        <div class="mb-3">
+          <label for="location" class="form-label">Location</label>
+          <input type="text" class="form-control" id="location" name="location" value="{{ event.location|default_if_none:'' }}">
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-primary">{% if event %}Update{% else %}Create{% endif %}</button>
+        </div>
+      </form>
+
+      <div class="mt-3">
+        <a href="{% url 'event_list' %}" class="btn btn-secondary">Back to Events</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Disable past dates -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const dateInput = document.getElementById("date");
+    const startTimeInput = document.getElementById("start_time");
+    const endTimeInput = document.getElementById("end_time");
+
+    const now = new Date();
+    const todayStr = now.toISOString().split("T")[0];
+    dateInput.min = todayStr;
+
+    function pad(n) {
+      return n < 10 ? '0' + n : n;
+    }
+
+    function setMinTimeInputs() {
+      const selectedDate = dateInput.value;
+      const now = new Date();
+
+      if (selectedDate === todayStr) {
+        const hours = pad(now.getHours());
+        const minutes = pad(now.getMinutes());
+        const minTime = `${hours}:${minutes}`;
+        startTimeInput.min = minTime;
+        endTimeInput.min = minTime;
+      } else {
+        startTimeInput.removeAttribute("min");
+        endTimeInput.removeAttribute("min");
+      }
+
+      validateEndTime(); // Also validate end time after any change
+    }
+
+    function validateEndTime() {
+      const startTime = startTimeInput.value;
+      const endTime = endTimeInput.value;
+
+      if (startTime && endTime && endTime <= startTime) {
+        alert("End time must be after start time.");
+        endTimeInput.value = "";
+        endTimeInput.focus();
+      }
+    }
+
+    dateInput.addEventListener("change", setMinTimeInputs);
+    startTimeInput.addEventListener("change", function () {
+      setMinTimeInputs();
+      validateEndTime();
+    });
+    endTimeInput.addEventListener("change", validateEndTime);
+
+    // Initial check
+    setMinTimeInputs();
+  });
+</script>
+
+{% endblock %}

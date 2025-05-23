@@ -1,0 +1,21 @@
+{% extends "events/base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h1 class="card-title text-danger">Delete Event</h1>
+      <p class="card-text">
+        Are you sure you want to delete the event 
+        <strong>"{{ event.title }}"</strong> scheduled on 
+        <strong>{{ event.date }}</strong>?
+      </p>
+
+      <form method="post" class="d-flex gap-3">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a href="{% url 'event_list' %}" class="btn btn-secondary">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
