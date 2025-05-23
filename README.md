@@ -1,7 +1,7 @@
  Event Management Django Project
 
 A simple event management web application built with Django.  
-Users can view upcoming events, RSVP, and authenticated staff users can create, update, or delete events. The project includes user authentication and a responsive UI with Bootstrap.
+Users can view upcoming events, RSVP, and authenticated admin can create, update, or delete events. The project includes user authentication and a responsive UI with Bootstrap.
 
  Features
 
